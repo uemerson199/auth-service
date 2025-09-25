@@ -1,5 +1,6 @@
 package com.hospitalcare.auth_service.controllers;
 
+import com.hospitalcare.auth_service.dtos.ApiResponseDTO; // <-- IMPORTAR O NOVO DTO
 import com.hospitalcare.auth_service.dtos.AuthRequestDTO;
 import com.hospitalcare.auth_service.dtos.AuthResponseDTO;
 import com.hospitalcare.auth_service.entities.User;
@@ -29,12 +30,15 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody AuthRequestDTO request) {
+    // O tipo de retorno agora é genérico para aceitar múltiplos DTOs de resposta
+    public ResponseEntity<ApiResponseDTO> register(@RequestBody AuthRequestDTO request) {
 
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Usuário já existe.");
+            // Retorna um JSON de erro
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(new ApiResponseDTO("Usuário já existe."));
         }
-
 
         User newUser = User.builder()
                 .username(request.getUsername())
@@ -43,7 +47,9 @@ public class AuthController {
                 .build();
         userRepository.save(newUser);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Usuário registrado com sucesso!");
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new ApiResponseDTO("Usuário registrado com sucesso!"));
     }
 
     @PostMapping("/login")
