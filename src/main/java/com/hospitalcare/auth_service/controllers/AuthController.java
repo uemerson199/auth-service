@@ -30,11 +30,9 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    // O tipo de retorno agora é genérico para aceitar múltiplos DTOs de resposta
     public ResponseEntity<ApiResponseDTO> register(@RequestBody AuthRequestDTO request) {
 
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            // Retorna um JSON de erro
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body(new ApiResponseDTO("Usuário já existe."));
